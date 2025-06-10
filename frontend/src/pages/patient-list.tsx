@@ -1,4 +1,4 @@
-const PatientList = () => {
+function PatientList() {
   return (
     <>
       <div className="flex justify-between items-center mb-8">
@@ -33,12 +33,13 @@ const PatientList = () => {
               <td className="px-6 py-4 whitespace-nowrap">John Doe</td>
               <td className="px-6 py-4 whitespace-nowrap">Male</td>
               <td className="px-6 py-4 whitespace-nowrap">Software Engineer</td>
+              <td className="px-6 py-4 whitespace-nowrap">10</td>
             </tr>
           </tbody>
         </table>
       </div>
     </>
   );
-};
+}
 
 export default PatientList;

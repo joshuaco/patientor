@@ -1,12 +1,12 @@
 import { Route, Routes } from 'react-router';
 import MainLayout from '@/layouts/main-layout';
-import PatientList from './pages/patient-list';
+import Home from '@/pages/home';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
-        <Route index element={<PatientList />} />
+        <Route index element={<Home />} />
       </Route>
     </Routes>
   );
