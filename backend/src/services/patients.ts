@@ -1,6 +1,6 @@
-import { v4 as uuidv4 } from "uuid";
-import { NewPatient, Patient, PublicPatient } from "../types/patients";
-import patients from "../../data/patients";
+import { v4 as uuidv4 } from 'uuid';
+import { NewPatient, Patient, PublicPatient } from '../types/patients';
+import patients from '../../data/patients';
 
 const getAllPatients = (): Patient[] => {
   return patients;
@@ -16,7 +16,7 @@ const getAllPublicPatients = (): PublicPatient[] => {
   }));
 };
 
-const addNewPatient = (patientData: NewPatient) => {
+const addNewPatient = (patientData: NewPatient): Patient => {
   const newPatient = {
     id: uuidv4(),
     ...patientData,
