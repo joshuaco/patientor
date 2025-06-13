@@ -1,12 +1,19 @@
+import { useState } from 'react';
 import { User, Plus } from 'lucide-react';
 import HealthRatingBar from '@/components/health-rating-bar';
+import AddPatientForm from '@/components/add-patient-form';
+import Modal from '@/components/modal-form';
+
 import type { Patient } from '@/types/patient';
 
 interface PatientListProps {
   patients: Patient[];
+  setPatients: React.Dispatch<React.SetStateAction<Patient[]>>;
 }
 
-function PatientList({ patients }: PatientListProps) {
+function PatientList({ patients, setPatients }: PatientListProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <>
       <div className="flex justify-between items-center mb-8">
@@ -14,11 +21,23 @@ function PatientList({ patients }: PatientListProps) {
           <User size={24} />
           Patient List
         </h1>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer flex items-center gap-2">
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer flex items-center gap-2"
+          onClick={() => setIsOpen(true)}
+        >
           <Plus size={24} className="hidden md:block" />
           Add Patient
         </button>
       </div>
+
+      {isOpen && (
+        <Modal onClose={() => setIsOpen(false)} title="Add Patient">
+          <AddPatientForm
+            onClose={() => setIsOpen(false)}
+            setPatients={setPatients}
+          />
+        </Modal>
+      )}
 
       {/* Table for medium and large screens */}
       <div className="hidden md:block overflow-x-auto shadow-md rounded-lg">

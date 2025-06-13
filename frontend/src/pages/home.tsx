@@ -17,7 +17,7 @@ function Home() {
 
   return (
     <>
-      <PatientList patients={patients} />
+      <PatientList patients={patients} setPatients={setPatients} />
     </>
   );
 }
