@@ -39,8 +39,7 @@ function PatientList({ patients, setPatients }: PatientListProps) {
         </Modal>
       )}
 
-      {/* Table for medium and large screens */}
-      <div className="hidden md:block overflow-x-auto shadow-md rounded-lg">
+      <div className="overflow-x-auto shadow-md rounded-lg">
         <table
           className="min-w-full divide-y divide-gray-200"
           aria-label="Patient List"
@@ -50,10 +49,10 @@ function PatientList({ patients, setPatients }: PatientListProps) {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Name
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                 Gender
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
                 Occupation
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -67,16 +66,23 @@ function PatientList({ patients, setPatients }: PatientListProps) {
                 key={patient.id}
                 className="divide-x divide-gray-200 hover:bg-gray-50"
               >
-                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900 w-full max-w-0 truncate sm:max-w-none sm:w-auto">
                   {patient.name}
-                  <div className="lg:hidden text-sm text-gray-500 mt-1">
-                    {patient.gender}
-                  </div>
+                  <dl className="lg:hidden">
+                    <dt className="sr-only sm:hidden">Gender</dt>
+                    <dd className="text-sm text-gray-500 sm:hidden">
+                      {patient.gender}
+                    </dd>
+                    <dt className="sr-only lg:hidden">Occupation</dt>
+                    <dd className="text-sm text-gray-500 truncate lg:hidden">
+                      {patient.occupation}
+                    </dd>
+                  </dl>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-gray-600 hidden lg:table-cell">
+                <td className="px-6 py-4 whitespace-nowrap text-gray-600 hidden sm:table-cell">
                   {patient.gender}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                <td className="px-6 py-4 whitespace-nowrap text-gray-600 hidden lg:table-cell">
                   {patient.occupation}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -86,39 +92,6 @@ function PatientList({ patients, setPatients }: PatientListProps) {
             ))}
           </tbody>
         </table>
-      </div>
-
-      {/* Cards for small screens */}
-      <div className="md:hidden space-y-4">
-        {patients.map((patient) => (
-          <div
-            key={patient.id}
-            className="bg-white rounded-lg shadow-md p-4 border border-gray-200"
-          >
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="font-semibold text-lg text-gray-900">
-                {patient.name}
-              </h3>
-              <HealthRatingBar rating={3} />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm font-medium text-gray-500">
-                  Gender:
-                </span>
-                <span className="text-sm text-gray-900">{patient.gender}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm font-medium text-gray-500">
-                  Occupation:
-                </span>
-                <span className="text-sm text-gray-900">
-                  {patient.occupation}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
       </div>
     </>
   );
