@@ -46,6 +46,7 @@ const data = [
 const patientData: Patient[] = data.map((patient) => ({
   ...patient,
   gender: patient.gender as Gender,
+  entries: [],
 }));
 
 export default patientData;

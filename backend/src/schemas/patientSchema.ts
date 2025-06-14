@@ -4,6 +4,8 @@ export const GenderSchema = z.enum(['male', 'female', 'other'], {
   message: 'Invalid gender. Must be male, female or other',
 });
 
+export const EntrySchema = z.array(z.string());
+
 export const NewPatientSchema = z.object({
   name: z
     .string()
@@ -25,4 +27,5 @@ export const NewPatientSchema = z.object({
 
 export const PatientSchema = NewPatientSchema.extend({
   id: z.string().uuid(),
+  entries: EntrySchema,
 });
