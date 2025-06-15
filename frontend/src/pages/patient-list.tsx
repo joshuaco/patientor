@@ -5,11 +5,11 @@ import HealthRatingBar from '@/components/health-rating-bar';
 import AddPatientForm from '@/components/add-patient-form';
 import Modal from '@/components/modal-form';
 
-import type { Patient } from '@/types/patient';
+import type { PublicPatient } from '@/types/patient';
 
 interface PatientListProps {
-  patients: Patient[];
-  setPatients: React.Dispatch<React.SetStateAction<Patient[]>>;
+  patients: PublicPatient[];
+  setPatients: React.Dispatch<React.SetStateAction<PublicPatient[]>>;
 }
 
 function PatientList({ patients, setPatients }: PatientListProps) {

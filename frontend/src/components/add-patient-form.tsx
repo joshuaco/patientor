@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import type { NewPatient, Patient } from '@/types/patient';
+import type { Gender, NewPatient, PublicPatient } from '@/types/patient';
 import { createPatient } from '@/services/patients';
 
 interface AddPatientFormProps {
   onClose: () => void;
   onCancel?: () => void;
-  setPatients: React.Dispatch<React.SetStateAction<Patient[]>>;
+  setPatients: React.Dispatch<React.SetStateAction<PublicPatient[]>>;
 }
 
 function AddPatientForm({
@@ -17,7 +17,7 @@ function AddPatientForm({
     name: '',
     dateOfBirth: '',
     ssn: '',
-    gender: '',
+    gender: '' as Gender,
     occupation: '',
   });
 
@@ -71,7 +71,10 @@ function AddPatientForm({
     if (validateForm()) {
       try {
         const newPatient = await createPatient(formData);
-        setPatients((prevPatients: Patient[]) => [...prevPatients, newPatient]);
+        setPatients((prevPatients: PublicPatient[]) => [
+          ...prevPatients,
+          newPatient,
+        ]);
         onClose();
       } catch (error) {
         console.error('Error creating patient:', error);
@@ -84,7 +87,7 @@ function AddPatientForm({
       name: '',
       dateOfBirth: '',
       ssn: '',
-      gender: '',
+      gender: '' as Gender,
       occupation: '',
     });
     setErrors({});

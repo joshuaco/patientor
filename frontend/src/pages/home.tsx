@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import type { Patient } from '@/types/patient';
+import type { PublicPatient } from '@/types/patient';
 import { getAllPatients } from '@/services/patients';
 import PatientList from '@/pages/patient-list';
 
 function Home() {
-  const [patients, setPatients] = useState<Patient[]>([]);
+  const [patients, setPatients] = useState<PublicPatient[]>([]);
 
   useEffect(() => {
     const fetchPatients = async () => {

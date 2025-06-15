@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
 import {
   Calendar,
-  FileText,
-  Stethoscope,
   ClipboardList,
+  FileText,
   HeartPulse,
+  Stethoscope,
 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { getDiagnoses } from '@/services/diagnoses';
-import type { Entry, Diagnose } from '@/types/patient';
+import type { Diagnose, Entry } from '@/types/patient';
 
 interface EntriesInfoProps {
   entries: Entry[];
@@ -23,11 +23,6 @@ function EntriesInfo({ entries }: EntriesInfoProps) {
     };
     fetchDiagnoses();
   }, []);
-
-  const getDiagnoseName = (code: string) => {
-    const diagnose = diagnoses.find((diagnose) => diagnose.code === code);
-    return diagnose?.name;
-  };
 
   return (
     <div className="mt-8">
@@ -71,33 +66,10 @@ function EntriesInfo({ entries }: EntriesInfoProps) {
                   </div>
 
                   {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <ClipboardList className="h-4 w-4 text-gray-500" />
-                        <span className="text-base font-medium text-gray-700">
-                          Diagnosis Codes
-                        </span>
-                      </div>
-
-                      <div className="grid gap-3">
-                        {entry.diagnosisCodes.map((code) => (
-                          <div
-                            key={code}
-                            className="bg-blue-50 border border-blue-200 rounded-md p-4 hover:bg-blue-100 transition-colors duration-150"
-                          >
-                            <div className="flex items-start gap-3">
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-600 text-white">
-                                {code}
-                              </span>
-                              <p className="text-base text-gray-700 flex-1">
-                                {getDiagnoseName(code) ||
-                                  'Diagnosis name not found'}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    <DiagnosisInfo
+                      diagnosisCodes={entry.diagnosisCodes}
+                      diagnoses={diagnoses}
+                    />
                   )}
                 </div>
               </div>
@@ -105,6 +77,48 @@ function EntriesInfo({ entries }: EntriesInfoProps) {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function DiagnosisInfo({
+  diagnosisCodes,
+  diagnoses,
+}: {
+  diagnosisCodes: string[];
+  diagnoses: Diagnose[];
+}) {
+  const getDiagnoseName = (code: string) => {
+    const diagnose = diagnoses.find((diagnose) => diagnose.code === code);
+    return diagnose?.name;
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <ClipboardList className="h-4 w-4 text-gray-500" />
+        <span className="text-base font-medium text-gray-700">
+          Diagnosis Codes
+        </span>
+      </div>
+
+      <div className="grid gap-3">
+        {diagnosisCodes.map((code) => (
+          <div
+            key={code}
+            className="bg-blue-50 border border-blue-200 rounded-md p-4 hover:bg-blue-100 transition-colors duration-150"
+          >
+            <div className="flex items-start gap-3">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-600 text-white">
+                {code}
+              </span>
+              <p className="text-base text-gray-700 flex-1">
+                {getDiagnoseName(code) || 'Diagnosis name not found'}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
