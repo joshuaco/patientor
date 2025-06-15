@@ -1,10 +1,9 @@
 import { z } from 'zod';
+import { EntrySchema } from './entry-schema';
 
 export const GenderSchema = z.enum(['male', 'female', 'other'], {
   message: 'Invalid gender. Must be male, female or other',
 });
-
-export const EntrySchema = z.array(z.string());
 
 export const NewPatientSchema = z.object({
   name: z
@@ -27,5 +26,5 @@ export const NewPatientSchema = z.object({
 
 export const PatientSchema = NewPatientSchema.extend({
   id: z.string().uuid(),
-  entries: EntrySchema,
+  entries: z.array(EntrySchema),
 });

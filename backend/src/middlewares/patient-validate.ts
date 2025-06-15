@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { NewPatientSchema } from '../schemas/patientSchema';
+import { NewPatientSchema } from '../schemas/patient-schema';
 import { ZodError } from 'zod';
 
 export const patientValidate = (
