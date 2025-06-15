@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router';
 import MainLayout from '@/layouts/main-layout';
-import Home from '@/pages/home';
 import PatientInfo from '@/pages/patient-info';
+import Home from '@/pages/home';
 
 function App() {
   return (
