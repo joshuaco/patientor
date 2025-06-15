@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 import { User, Plus } from 'lucide-react';
 import HealthRatingBar from '@/components/health-rating-bar';
 import AddPatientForm from '@/components/add-patient-form';
@@ -67,7 +68,7 @@ function PatientList({ patients, setPatients }: PatientListProps) {
                 className="divide-x divide-gray-200 hover:bg-gray-50"
               >
                 <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900 w-full max-w-0 truncate sm:max-w-none sm:w-auto">
-                  {patient.name}
+                  <Link to={`/patients/${patient.id}`}>{patient.name}</Link>
                   <dl className="lg:hidden">
                     <dt className="sr-only sm:hidden">Gender</dt>
                     <dd className="text-sm text-gray-500 sm:hidden">

@@ -5,6 +5,7 @@ export type Patient = {
   ssn?: string;
   gender: string;
   occupation: string;
+  entries?: [];
 };
 
 export type NewPatient = Omit<Patient, 'id'>;
