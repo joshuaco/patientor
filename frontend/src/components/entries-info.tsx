@@ -4,10 +4,17 @@ import {
   FileText,
   HeartPulse,
   Stethoscope,
+  BriefcaseBusiness,
+  Heart,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getDiagnoses } from '@/services/diagnoses';
 import type { Diagnose, Entry } from '@/types/patient';
+import type {
+  HealthCheckEntry,
+  HospitalEntry,
+  OccupationalHealthcareEntry,
+} from '@/types/entry';
 
 interface EntriesInfoProps {
   entries: Entry[];
@@ -51,19 +58,21 @@ function EntriesInfo({ entries }: EntriesInfoProps) {
                 </div>
 
                 <div className="flex-1 space-y-4">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-gray-500" />
                     <span className="text-base font-semibold text-gray-800">
                       {entry.date}
                     </span>
                   </div>
 
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4 text-gray-500 mt-0.5" />
                     <p className="text-base text-gray-700 leading-relaxed">
                       {entry.description}
                     </p>
                   </div>
+
+                  <EntryDetails entry={entry} />
 
                   {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
                     <DiagnosisInfo
@@ -71,6 +80,13 @@ function EntriesInfo({ entries }: EntriesInfoProps) {
                       diagnoses={diagnoses}
                     />
                   )}
+
+                  <div className="flex items-center gap-2">
+                    <p className="text-gray-700">
+                      Diagnose by{' '}
+                      <span className="font-semibold">{entry.specialist}</span>
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -118,6 +134,90 @@ function DiagnosisInfo({
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+function EntryDetails({ entry }: { entry: Entry }) {
+  switch (entry.type) {
+    case 'Hospital':
+      return <HospitalEntryDetails entry={entry} />;
+    case 'OccupationalHealthcare':
+      return <OccupationalHealthcareEntryDetails entry={entry} />;
+    case 'HealthCheck':
+      return <HealthCheckEntryDetails entry={entry} />;
+    default:
+      return null;
+  }
+}
+
+function HospitalEntryDetails({ entry }: { entry: HospitalEntry }) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <FileText className="h-4 w-4 text-gray-500" />
+        <p className="text-base text-gray-700">
+          Discharged on{' '}
+          <span className="font-semibold">{entry.discharge.date}</span>
+        </p>
+        <p className="text-base text-gray-700">
+          Criteria: {entry.discharge.criteria}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function OccupationalHealthcareEntryDetails({
+  entry,
+}: {
+  entry: OccupationalHealthcareEntry;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <BriefcaseBusiness className="h-4 w-4 text-gray-500" />
+        <p className="text-base text-gray-700">
+          Employer: {entry.employerName}
+        </p>
+      </div>
+      {entry.sickLeave && (
+        <div className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-gray-500" />
+          <p className="text-base text-gray-700">
+            Sick leave:{' '}
+            <span className="font-medium">
+              {entry.sickLeave.startDate} - {entry.sickLeave.endDate}
+            </span>
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function HealthCheckEntryDetails({ entry }: { entry: HealthCheckEntry }) {
+  const getHealthCheckRatingIcon = (rating: number) => {
+    switch (rating) {
+      case 0:
+        return <Heart className="h-4 w-4 text-green-500 fill-green-500" />;
+      case 1:
+        return <Heart className="h-4 w-4 text-yellow-500 fill-yellow-500" />;
+      case 2:
+        return <Heart className="h-4 w-4 text-red-500 fill-red-500" />;
+      case 3:
+        return <Heart className="h-4 w-4 text-gray-500 fill-gray-500" />;
+    }
+  };
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <HeartPulse className="h-4 w-4 text-gray-500" />
+        <p className="text-base text-gray-700 flex items-center gap-2">
+          Health check rating:{' '}
+          {getHealthCheckRatingIcon(entry.healthCheckRating)}
+        </p>
       </div>
     </div>
   );
