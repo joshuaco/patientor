@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import { NewPatientSchema } from '../schemas/patient-schema';
-import { ZodError } from 'zod';
 
 export const patientValidate = (
   req: Request,
@@ -11,19 +10,6 @@ export const patientValidate = (
     NewPatientSchema.parse(req.body);
     next();
   } catch (error) {
-    next(error);
-  }
-};
-
-export const errorHandler = (
-  error: unknown,
-  _req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  if (error instanceof ZodError) {
-    res.status(400).json({ error: error.flatten().fieldErrors });
-  } else {
     next(error);
   }
 };
