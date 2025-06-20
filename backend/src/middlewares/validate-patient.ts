@@ -3,14 +3,6 @@ import { NewPatientSchema } from '../schemas/patient-schema';
 
 import patients from '../../data/patients';
 
-import type { Patient } from '../types/patients';
-
-declare module 'express' {
-  interface Request {
-    patient: Patient;
-  }
-}
-
 export const patientValidate = (
   req: Request,
   _res: Response,
