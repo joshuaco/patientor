@@ -12,4 +12,8 @@ const addNewEntry = (entryData: NewEntry, patient: Patient) => {
   return newEntry;
 };
 
-export default { addNewEntry };
+const deleteEntry = (patient: Patient, entryId: string) => {
+  return patient.entries.filter((entry) => entry.id !== entryId);
+};
+
+export default { addNewEntry, deleteEntry };
