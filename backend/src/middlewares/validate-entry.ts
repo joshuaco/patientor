@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from "express";
-import { NewEntrySchema } from "../schemas/entry-schema";
+import { Request, Response, NextFunction } from 'express';
+import { NewEntrySchema } from '../schemas/entry-schema';
 
 export const validateEntry = (
   req: Request,
   _res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
     NewEntrySchema.parse(req.body);
@@ -17,13 +17,11 @@ export const validateEntry = (
 export const entryExists = (
   req: Request,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   const { entryId } = req.params;
-  if (req.patient.entries.find((entry) => entry.id === entryId)) {
-    next();
-  } else {
-    res.status(404).json({ error: "Entry not found" });
+  if (!req.patient.entries.find((entry) => entry.id === entryId)) {
+    res.status(404).json({ error: 'Entry not found' });
     return;
   }
   next();

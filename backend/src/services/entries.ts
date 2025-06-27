@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
-import { NewEntry, Patient } from "../types/patients";
+import { v4 as uuidv4 } from 'uuid';
+import { NewEntry, Patient } from '../types/patients';
 
 const addNewEntry = (entryData: NewEntry, patient: Patient) => {
   const newEntry = {
@@ -13,7 +13,10 @@ const addNewEntry = (entryData: NewEntry, patient: Patient) => {
 };
 
 const deleteEntry = (patient: Patient, entryId: string) => {
-  return patient.entries.filter((entry) => entry.id !== entryId);
+  const updatedEntries = patient.entries.filter(
+    (entry) => entry.id !== entryId
+  );
+  patient.entries = updatedEntries;
 };
 
 export default { addNewEntry, deleteEntry };
