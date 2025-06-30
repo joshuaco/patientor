@@ -46,7 +46,7 @@ function PatientInfo() {
 
   return (
     <section className="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-4 mb-6 justify-between">
         <div className="w-12 h-12 bg-gradient-to-br from-blue-50 to-blue-100 rounded-full flex items-center justify-center">
           <User className="text-blue-600 w-6 h-6" />
         </div>
@@ -89,7 +89,7 @@ function PatientInfo() {
       </div>
 
       {/* Entries Information */}
-      <EntriesInfo entries={patient.entries} />
+      <EntriesInfo entries={patient.entries} setPatient={setPatient} />
     </section>
   );
 }

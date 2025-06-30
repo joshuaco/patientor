@@ -17,7 +17,11 @@ function Home() {
 
   return (
     <>
-      <PatientList patients={patients} setPatients={setPatients} />
+      {patients.length > 0 ? (
+        <PatientList patients={patients} setPatients={setPatients} />
+      ) : (
+        <div>No patients found</div>
+      )}
     </>
   );
 }

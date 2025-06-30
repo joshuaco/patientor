@@ -6,22 +6,28 @@ import {
   Stethoscope,
   BriefcaseBusiness,
   Heart,
+  Plus,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getDiagnoses } from '@/services/diagnoses';
-import type { Diagnose, Entry } from '@/types/patient';
+import type { Diagnose, Entry, Patient } from '@/types/patient';
 import type {
   HealthCheckEntry,
   HospitalEntry,
   OccupationalHealthcareEntry,
 } from '@/types/entry';
 
+import Modal from './modal-form';
+import AddEntryForm from './add-entry-form';
+
 interface EntriesInfoProps {
   entries: Entry[];
+  setPatient: React.Dispatch<React.SetStateAction<Patient | null>>;
 }
 
-function EntriesInfo({ entries }: EntriesInfoProps) {
+function EntriesInfo({ entries, setPatient }: EntriesInfoProps) {
   const [diagnoses, setDiagnoses] = useState<Diagnose[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const fetchDiagnoses = async () => {
@@ -33,11 +39,20 @@ function EntriesInfo({ entries }: EntriesInfoProps) {
 
   return (
     <div className="mt-8">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="w-12 h-12 bg-gradient-to-br from-red-50 to-red-100 rounded-full flex items-center justify-center">
-          <HeartPulse className="h-6 w-6 text-red-500" />
+      <div className="flex items-center gap-4 mb-6 justify-between">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-red-50 to-red-100 rounded-full flex items-center justify-center">
+            <HeartPulse className="h-6 w-6 text-red-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">Medical Entries</h2>
         </div>
-        <h2 className="text-2xl font-bold text-gray-900">Medical Entries</h2>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-blue-600 transition-colors duration-200"
+          onClick={() => setIsOpen(true)}
+        >
+          <Plus className="h-4 w-4" />
+          Add Entry
+        </button>
       </div>
 
       {entries.length === 0 ? (
@@ -92,6 +107,11 @@ function EntriesInfo({ entries }: EntriesInfoProps) {
             </div>
           ))}
         </div>
+      )}
+      {isOpen && (
+        <Modal onClose={() => setIsOpen(false)} title="Add Entry">
+          <AddEntryForm diagnoses={diagnoses} setPatient={setPatient} />
+        </Modal>
       )}
     </div>
   );
@@ -198,16 +218,18 @@ function OccupationalHealthcareEntryDetails({
 }
 
 function HealthCheckEntryDetails({ entry }: { entry: HealthCheckEntry }) {
-  const getHealthCheckRatingIcon = (rating: number) => {
+  const getHealthCheckRatingIcon = (rating: string) => {
     switch (rating) {
-      case 0:
+      case '0':
         return <Heart className="h-4 w-4 text-green-500 fill-green-500" />;
-      case 1:
+      case '1':
         return <Heart className="h-4 w-4 text-yellow-500 fill-yellow-500" />;
-      case 2:
+      case '2':
         return <Heart className="h-4 w-4 text-red-500 fill-red-500" />;
-      case 3:
+      case '3':
         return <Heart className="h-4 w-4 text-gray-500 fill-gray-500" />;
+      default:
+        return null;
     }
   };
   return (
@@ -216,8 +238,20 @@ function HealthCheckEntryDetails({ entry }: { entry: HealthCheckEntry }) {
         <HeartPulse className="h-4 w-4 text-gray-500" />
         <p className="text-base text-gray-700 flex items-center gap-2">
           Health check rating:{' '}
-          {getHealthCheckRatingIcon(entry.healthCheckRating)}
+          {getHealthCheckRatingIcon(entry.healthCheckRating.toString())}
         </p>
+        {entry.healthCheckRating === '0' && (
+          <p className="text-base font-medium text-gray-700">Healthy</p>
+        )}
+        {entry.healthCheckRating === '1' && (
+          <p className="text-base font-medium text-gray-700">Low Risk</p>
+        )}
+        {entry.healthCheckRating === '2' && (
+          <p className="text-base font-medium text-gray-700">High Risk</p>
+        )}
+        {entry.healthCheckRating === '3' && (
+          <p className="text-base font-medium text-gray-700">Critical Risk</p>
+        )}
       </div>
     </div>
   );
