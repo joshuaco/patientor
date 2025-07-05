@@ -1,0 +1,72 @@
+:root {
+  /* Medical Theme Colors */
+  --medical-primary: #2563eb; /* Tailwind blue-600 */
+  --medical-primary-dark: #1d4ed8; /* Tailwind blue-700 */
+  --medical-primary-light: #3b82f6; /* Tailwind blue-500 */
+
+  --medical-secondary: #059669; /* Medical green for positive indicators */
+  --medical-accent: #0891b2; /* Teal for accents */
+
+  --medical-background: #f8fafc; /* Light gray background */
+  --medical-surface: #ffffff;
+  --medical-border: #e2e8f0;
+
+  --medical-text-primary: #1e293b;
+  --medical-text-secondary: #64748b;
+  --medical-text-light: #94a3b8;
+
+  --medical-success: #059669;
+  --medical-warning: #d97706;
+  --medical-error: #dc2626;
+  --medical-info: #0891b2;
+}
+
+/* Medical Theme Utility Classes */
+.text-medical-primary {
+  color: var(--medical-primary);
+}
+.text-medical-primary-dark {
+  color: var(--medical-primary-dark);
+}
+.text-medical-secondary {
+  color: var(--medical-secondary);
+}
+.text-medical-text-primary {
+  color: var(--medical-text-primary);
+}
+.text-medical-text-secondary {
+  color: var(--medical-text-secondary);
+}
+.text-medical-text-light {
+  color: var(--medical-text-light);
+}
+
+.bg-medical-primary {
+  background-color: var(--medical-primary);
+}
+.bg-medical-primary-dark {
+  background-color: var(--medical-primary-dark);
+}
+.bg-medical-primary-light {
+  background-color: var(--medical-primary-light);
+}
+.bg-medical-background {
+  background-color: var(--medical-background);
+}
+.bg-medical-surface {
+  background-color: var(--medical-surface);
+}
+
+.border-medical-border {
+  border-color: var(--medical-border);
+}
+.border-medical-primary {
+  border-color: var(--medical-primary);
+}
+
+.hover\:bg-medical-primary-dark:hover {
+  background-color: var(--medical-primary-dark);
+}
+.hover\:bg-medical-primary\/10:hover {
+  background-color: rgb(37 99 235 / 0.1);
+}

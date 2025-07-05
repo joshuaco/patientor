@@ -7,7 +7,8 @@ import {
   BriefcaseBusiness,
   Heart,
   Plus,
-  X,
+  Trash2,
+  AlertCircle,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
@@ -44,100 +45,172 @@ function EntriesInfo({ entries, setPatient }: EntriesInfoProps) {
   }, []);
 
   const handleDeleteEntry = async (entryId: string) => {
-    await deleteEntry(patientId, entryId);
-    setPatient((prev) =>
-      prev
-        ? { ...prev, entries: prev.entries.filter((e) => e.id !== entryId) }
-        : null
-    );
+    if (!patientId) return;
+    try {
+      await deleteEntry(patientId, entryId);
+      setPatient((prev) =>
+        prev
+          ? { ...prev, entries: prev.entries.filter((e) => e.id !== entryId) }
+          : null
+      );
+    } catch (error) {
+      console.error('Error deleting entry:', error);
+    }
+  };
+
+  const getEntryTypeIcon = (type: string) => {
+    switch (type) {
+      case 'Hospital':
+        return <Heart className="h-5 w-5 text-medical-primary" />;
+      case 'OccupationalHealthcare':
+        return <BriefcaseBusiness className="h-5 w-5 text-medical-primary" />;
+      case 'HealthCheck':
+        return <HeartPulse className="h-5 w-5 text-medical-primary" />;
+      default:
+        return <Stethoscope className="h-5 w-5 text-medical-primary" />;
+    }
+  };
+
+  const getEntryTypeLabel = (type: string) => {
+    switch (type) {
+      case 'Hospital':
+        return 'Hospital Visit';
+      case 'OccupationalHealthcare':
+        return 'Occupational Healthcare';
+      case 'HealthCheck':
+        return 'Health Check';
+      default:
+        return 'Medical Entry';
+    }
   };
 
   return (
-    <div className="mt-8">
-      <div className="flex items-center gap-4 mb-6 justify-between">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-red-50 to-red-100 rounded-full flex items-center justify-center">
-            <HeartPulse className="h-6 w-6 text-red-500" />
+    <div className="mt-8 bg-medical-background min-h-screen">
+      {/* Header Section */}
+      <div className="bg-white shadow-sm border-b border-medical-border p-6">
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-gradient-to-br from-medical-primary/10 to-medical-primary/20 rounded-xl flex items-center justify-center shadow-sm">
+              <HeartPulse className="h-7 w-7 text-medical-primary" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold text-medical-text-primary">
+                Medical Entries
+              </h2>
+              <p className="text-medical-text-secondary text-sm mt-1">
+                {entries.length} {entries.length === 1 ? 'entry' : 'entries'}{' '}
+                recorded
+              </p>
+            </div>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">Medical Entries</h2>
+          <button
+            className="bg-medical-primary text-white px-6 py-3 rounded-lg flex items-center gap-3 hover:bg-medical-primary-dark transition-all duration-200 shadow-sm hover:shadow-md font-medium"
+            onClick={() => setIsOpen(true)}
+          >
+            <Plus className="h-5 w-5" />
+            Add New Entry
+          </button>
         </div>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center gap-2 hover:bg-blue-600 transition-colors duration-200"
-          onClick={() => setIsOpen(true)}
-        >
-          <Plus className="h-4 w-4" />
-          Add Entry
-        </button>
       </div>
 
-      {entries.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 text-gray-500">
-          <FileText className="h-12 w-12 mb-4 text-gray-300" />
-          <p className="text-lg">No medical entries found</p>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {entries.map((entry) => (
-            <div
-              key={entry.id}
-              className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200"
-            >
-              <div className="flex gap-3 items-start justify-between">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0 mt-1">
-                    <Stethoscope className="h-5 w-5 text-blue-500" />
-                  </div>
-
-                  <div className="flex-1 space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-gray-500" />
-                      <span className="text-base font-semibold text-gray-800">
-                        {entry.date}
-                      </span>
+      {/* Content Section */}
+      <div className="max-w-7xl mx-auto p-6">
+        {entries.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm border border-medical-border p-12">
+            <div className="flex flex-col items-center justify-center text-medical-text-secondary">
+              <FileText className="h-16 w-16 mb-6 text-medical-primary/30" />
+              <h3 className="text-xl font-medium text-medical-text-primary mb-2">
+                No Medical Entries
+              </h3>
+              <p className="text-medical-text-secondary">
+                Start by adding the first medical entry for this patient.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {entries.map((entry) => (
+              <div
+                key={entry.id}
+                className="bg-white border border-medical-border rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
+              >
+                {/* Entry Header */}
+                <div className="bg-medical-background/30 px-6 py-4 border-b border-gray-300">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0">
+                        {getEntryTypeIcon(entry.type)}
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-medium text-medical-text-primary">
+                          {getEntryTypeLabel(entry.type)}
+                        </h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Calendar className="h-4 w-4 text-medical-primary" />
+                          <span className="text-medical-text-secondary font-medium">
+                            {entry.date}
+                          </span>
+                        </div>
+                      </div>
                     </div>
+                    <button
+                      onClick={() => handleDeleteEntry(entry.id)}
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 group"
+                      title="Delete entry"
+                    >
+                      <Trash2 className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                    </button>
+                  </div>
+                </div>
 
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-gray-500 mt-0.5" />
-                      <p className="text-base text-gray-700 leading-relaxed">
+                {/* Entry Content */}
+                <div className="p-6 space-y-6">
+                  {/* Description */}
+                  <div className="flex items-start gap-3">
+                    <FileText className="h-5 w-5 text-medical-primary mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h4 className="text-sm font-medium text-medical-text-primary mb-1">
+                        Description
+                      </h4>
+                      <p className="text-medical-text-secondary leading-relaxed">
                         {entry.description}
                       </p>
                     </div>
+                  </div>
 
-                    <EntryDetails entry={entry} />
+                  {/* Entry Details */}
+                  <EntryDetails entry={entry} />
 
-                    {entry.diagnosisCodes &&
-                      entry.diagnosisCodes.length > 0 && (
-                        <DiagnosisInfo
-                          diagnosisCodes={entry.diagnosisCodes}
-                          diagnoses={diagnoses}
-                        />
-                      )}
+                  {/* Diagnosis Codes */}
+                  {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
+                    <DiagnosisInfo
+                      diagnosisCodes={entry.diagnosisCodes}
+                      diagnoses={diagnoses}
+                    />
+                  )}
 
-                    <div className="flex items-center gap-2">
-                      <p className="text-gray-700">
-                        Diagnose by{' '}
-                        <span className="font-semibold">
-                          {entry.specialist}
-                        </span>
-                      </p>
+                  {/* Specialist */}
+                  <div className="flex items-center gap-3 pt-2">
+                    <Stethoscope className="h-5 w-5 text-medical-primary" />
+                    <div>
+                      <span className="text-sm text-medical-text-secondary">
+                        Attending Physician:
+                      </span>
+                      <span className="ml-2 font-medium text-medical-text-primary">
+                        Dr. {entry.specialist}
+                      </span>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    className="text-white px-4 py-0 rounded-md flex items-center gap-2 transition-colors duration-200"
-                    onClick={() => handleDeleteEntry(entry.id)}
-                  >
-                    <X className="h-8 w-8 text-red-500 hover:text-red-600 hover:scale-110" />
-                  </button>
-                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Modal */}
       {isOpen && (
-        <Modal onClose={() => setIsOpen(false)} title="Add Entry">
+        <Modal onClose={() => setIsOpen(false)} title="Add New Medical Entry">
           <AddEntryForm
             diagnoses={diagnoses}
             setPatient={setPatient}
@@ -162,26 +235,26 @@ function DiagnosisInfo({
   };
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <ClipboardList className="h-4 w-4 text-gray-500" />
-        <span className="text-base font-medium text-gray-700">
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <ClipboardList className="h-5 w-5 text-medical-primary" />
+        <h4 className="text-sm font-medium text-medical-text-primary">
           Diagnosis Codes
-        </span>
+        </h4>
       </div>
 
       <div className="grid gap-3">
         {diagnosisCodes.map((code) => (
           <div
             key={code}
-            className="bg-blue-50 border border-blue-200 rounded-md p-4 hover:bg-blue-100 transition-colors duration-150"
+            className="bg-medical-primary/5 border border-medical-primary/20 rounded-lg p-4 hover:bg-medical-primary/10 transition-colors duration-200"
           >
             <div className="flex items-start gap-3">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-600 text-white">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-medical-primary-light text-white">
                 {code}
               </span>
-              <p className="text-base text-gray-700 flex-1">
-                {getDiagnoseName(code) || 'Diagnosis name not found'}
+              <p className="text-medical-text-secondary flex-1 leading-relaxed">
+                {getDiagnoseName(code) || 'Diagnosis name not available'}
               </p>
             </div>
           </div>
@@ -207,15 +280,20 @@ function EntryDetails({ entry }: { entry: Entry }) {
 function HospitalEntryDetails({ entry }: { entry: HospitalEntry }) {
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <FileText className="h-4 w-4 text-gray-500" />
-        <p className="text-base text-gray-700">
-          Discharged on{' '}
-          <span className="font-semibold">{entry.discharge.date}</span>
-        </p>
-        <p className="text-base text-gray-700">
-          Criteria: {entry.discharge.criteria}
-        </p>
+      <div className="flex items-center gap-3">
+        <Calendar className="h-5 w-5 text-medical-primary" />
+        <div>
+          <h4 className="text-sm font-medium text-medical-text-primary mb-1">
+            Discharge Information
+          </h4>
+          <p className="text-medical-text-secondary">
+            <span className="font-medium">Date:</span> {entry.discharge.date}
+          </p>
+          <p className="text-medical-text-secondary">
+            <span className="font-medium">Criteria:</span>{' '}
+            {entry.discharge.criteria}
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -227,22 +305,32 @@ function OccupationalHealthcareEntryDetails({
   entry: OccupationalHealthcareEntry;
 }) {
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <BriefcaseBusiness className="h-4 w-4 text-gray-500" />
-        <p className="text-base text-gray-700">
-          Employer: {entry.employerName}
-        </p>
+    <div className="space-y-4">
+      <div className="flex items-center gap-3">
+        <BriefcaseBusiness className="h-5 w-5 text-medical-primary" />
+        <div>
+          <h4 className="text-sm font-medium text-medical-text-primary mb-1">
+            Employer Information
+          </h4>
+          <p className="text-medical-text-secondary">
+            <span className="font-medium">Company:</span> {entry.employerName}
+          </p>
+        </div>
       </div>
       {entry.sickLeave && (
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-gray-500" />
-          <p className="text-base text-gray-700">
-            Sick leave:{' '}
-            <span className="font-medium">
-              {entry.sickLeave.startDate} - {entry.sickLeave.endDate}
-            </span>
-          </p>
+        <div className="flex items-center gap-3">
+          <AlertCircle className="h-5 w-5 text-medical-primary" />
+          <div>
+            <h4 className="text-sm font-medium text-medical-text-primary mb-1">
+              Sick Leave Period
+            </h4>
+            <p className="text-medical-text-secondary">
+              <span className="font-medium">From:</span>{' '}
+              {entry.sickLeave.startDate}
+              <span className="mx-2">•</span>
+              <span className="font-medium">To:</span> {entry.sickLeave.endDate}
+            </p>
+          </div>
         </div>
       )}
     </div>
@@ -250,40 +338,65 @@ function OccupationalHealthcareEntryDetails({
 }
 
 function HealthCheckEntryDetails({ entry }: { entry: HealthCheckEntry }) {
-  const getHealthCheckRatingIcon = (rating: string) => {
+  const getHealthCheckRating = (rating: number) => {
     switch (rating) {
-      case '0':
-        return <Heart className="h-4 w-4 text-green-500 fill-green-500" />;
-      case '1':
-        return <Heart className="h-4 w-4 text-yellow-500 fill-yellow-500" />;
-      case '2':
-        return <Heart className="h-4 w-4 text-red-500 fill-red-500" />;
-      case '3':
-        return <Heart className="h-4 w-4 text-gray-500 fill-gray-500" />;
+      case 0:
+        return {
+          label: 'Excellent Health',
+          color: 'text-emerald-600',
+          bgColor: 'bg-emerald-50',
+          icon: <Heart className="h-4 w-4 text-emerald-600 fill-emerald-600" />,
+        };
+      case 1:
+        return {
+          label: 'Good Health',
+          color: 'text-green-600',
+          bgColor: 'bg-green-50',
+          icon: <Heart className="h-4 w-4 text-green-600 fill-green-600" />,
+        };
+      case 2:
+        return {
+          label: 'Moderate Risk',
+          color: 'text-yellow-600',
+          bgColor: 'bg-yellow-50',
+          icon: <Heart className="h-4 w-4 text-yellow-600 fill-yellow-600" />,
+        };
+      case 3:
+        return {
+          label: 'High Risk',
+          color: 'text-red-600',
+          bgColor: 'bg-red-50',
+          icon: <Heart className="h-4 w-4 text-red-600 fill-red-600" />,
+        };
       default:
-        return null;
+        return {
+          label: 'Unknown',
+          color: 'text-gray-600',
+          bgColor: 'bg-gray-50',
+          icon: <Heart className="h-4 w-4 text-gray-600" />,
+        };
     }
   };
+
+  const rating = getHealthCheckRating(Number(entry.healthCheckRating));
+
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <HeartPulse className="h-4 w-4 text-gray-500" />
-        <p className="text-base text-gray-700 flex items-center gap-2">
-          Health check rating:{' '}
-          {getHealthCheckRatingIcon(entry.healthCheckRating.toString())}
-        </p>
-        {entry.healthCheckRating === '0' && (
-          <p className="text-base font-medium text-gray-700">Healthy</p>
-        )}
-        {entry.healthCheckRating === '1' && (
-          <p className="text-base font-medium text-gray-700">Low Risk</p>
-        )}
-        {entry.healthCheckRating === '2' && (
-          <p className="text-base font-medium text-gray-700">High Risk</p>
-        )}
-        {entry.healthCheckRating === '3' && (
-          <p className="text-base font-medium text-gray-700">Critical Risk</p>
-        )}
+      <div className="flex items-center gap-3">
+        <HeartPulse className="h-5 w-5 text-medical-primary" />
+        <div>
+          <h4 className="text-sm font-medium text-medical-text-primary mb-2">
+            Health Assessment
+          </h4>
+          <div
+            className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg ${rating.bgColor}`}
+          >
+            {rating.icon}
+            <span className={`font-medium ${rating.color}`}>
+              {rating.label}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

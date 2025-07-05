@@ -7,7 +7,6 @@ export const createEntry = async (
 ): Promise<Entry> => {
   try {
     const response = await api.post(`/patients/${patientId}/entries`, newEntry);
-    console.log('Entry created:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error creating entry:', error);
@@ -15,13 +14,12 @@ export const createEntry = async (
   }
 };
 
-export const deleteEntry = async (patientId: string, entryId: string) => {
+export const deleteEntry = async (
+  patientId: string,
+  entryId: string
+): Promise<void> => {
   try {
-    const response = await api.delete(
-      `/patients/${patientId}/entries/${entryId}`
-    );
-    console.log('Entry deleted:', response.data);
-    return response.data;
+    await api.delete(`/patients/${patientId}/entries/${entryId}`);
   } catch (error) {
     console.error('Error deleting entry:', error);
     throw error;
