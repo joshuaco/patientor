@@ -1,86 +1,66 @@
 import { useState } from 'react';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useParams } from 'react-router';
 import { createEntry } from '@/services/entries';
 import type { Diagnose, NewEntry, Patient } from '@/types/patient';
 
 interface AddEntryFormProps {
-  diagnoses: Diagnose[];
   setPatient: React.Dispatch<React.SetStateAction<Patient | null>>;
+  diagnoses: Diagnose[];
+  onClose: () => void;
 }
 
-function AddEntryForm({ setPatient }: AddEntryFormProps) {
-  const [formData, setFormData] = useState<NewEntry>({} as NewEntry);
-  const [errors, setErrors] = useState<Partial<Record<keyof NewEntry, string>>>(
-    {}
-  );
+function AddEntryForm({ setPatient, diagnoses, onClose }: AddEntryFormProps) {
+  const [selectedDiagnoses, setSelectedDiagnoses] = useState<string[]>([]);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<NewEntry>();
+
+  const type = watch('type');
 
   // Retrieve patientId from URL
   const params = useParams();
   const patientId = params.id as string;
 
-  const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof NewEntry, string>> = {};
+  const onSubmit: SubmitHandler<NewEntry> = async (data) => {
+    // Ensure diagnosisCodes is set as array
+    const formData = {
+      ...data,
+      diagnosisCodes: selectedDiagnoses.length > 0 ? selectedDiagnoses : [],
+    };
+    console.log(formData);
 
-    if (!formData.date) {
-      newErrors.date = 'Date is required';
-    }
-
-    if (!formData.description || !formData.description.trim()) {
-      newErrors.description = 'Description is required';
-    }
-
-    if (!formData.specialist || !formData.specialist.trim()) {
-      newErrors.specialist = 'Specialist is required';
-    }
-
-    if (!formData.type) {
-      newErrors.type = 'Type is required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // Clear error when user starts typing
-    if (errors[name as keyof NewEntry]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: undefined,
-      }));
+    try {
+      const newEntry = await createEntry(patientId, formData);
+      setPatient((prev) =>
+        prev ? { ...prev, entries: [...prev.entries, newEntry] } : null
+      );
+      onClose();
+    } catch (error) {
+      console.error('Error creating entry:', error);
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (validateForm()) {
-      console.log(formData);
-      try {
-        const newEntry = await createEntry(patientId, formData);
-        setPatient((prev) => {
-          if (!prev) return null;
-          return {
-            ...prev,
-            entries: [...prev.entries, newEntry],
-          };
-        });
-      } catch (error) {
-        console.error('Error creating entry:', error);
-      }
-    }
+  const handleDiagnosisChange = (code: string) => {
+    setSelectedDiagnoses((prev) => {
+      const isSelected = prev.includes(code);
+      const newSelection = isSelected
+        ? prev.filter((c) => c !== code)
+        : [...prev, code];
+
+      // Update react-hook-form value
+      setValue('diagnosisCodes', newSelection.length > 0 ? newSelection : []);
+      return newSelection;
+    });
   };
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <div>
           <label
             htmlFor="date"
@@ -91,17 +71,18 @@ function AddEntryForm({ setPatient }: AddEntryFormProps) {
           <input
             type="date"
             id="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
+            {...register('date', {
+              required: 'Date is required',
+            })}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.date ? 'border-red-500' : 'border-gray-300'
             }`}
           />
           {errors.date && (
-            <p className="mt-1 text-sm text-red-600">{errors.date}</p>
+            <p className="mt-1 text-sm text-red-600">{errors.date.message}</p>
           )}
         </div>
+
         <div>
           <label
             htmlFor="description"
@@ -112,17 +93,24 @@ function AddEntryForm({ setPatient }: AddEntryFormProps) {
           <input
             type="text"
             id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
+            {...register('description', {
+              required: 'Description is required',
+              minLength: {
+                value: 5,
+                message: 'Description must be at least 5 characters long',
+              },
+            })}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.description ? 'border-red-500' : 'border-gray-300'
             }`}
           />
           {errors.description && (
-            <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {errors.description.message}
+            </p>
           )}
         </div>
+
         <div>
           <label
             htmlFor="specialist"
@@ -133,16 +121,59 @@ function AddEntryForm({ setPatient }: AddEntryFormProps) {
           <input
             type="text"
             id="specialist"
-            name="specialist"
-            value={formData.specialist}
-            onChange={handleChange}
+            {...register('specialist', {
+              required: 'Specialist is required',
+              minLength: {
+                value: 2,
+                message: 'Specialist name must be at least 2 characters long',
+              },
+            })}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.specialist ? 'border-red-500' : 'border-gray-300'
             }`}
           />
           {errors.specialist && (
-            <p className="mt-1 text-sm text-red-600">{errors.specialist}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {errors.specialist.message}
+            </p>
           )}
+        </div>
+
+        <div>
+          <label
+            htmlFor="diagnosisCodes"
+            className="block text-sm font-medium text-gray-700 mb-1 relative"
+          >
+            Diagnosis Codes (optional){' '}
+            <span className="text-xs text-gray-500"> Click to show</span>
+          </label>
+          <input
+            type="checkbox"
+            name="diagnosisCodes"
+            id="diagnosisCodes"
+            className="hidden peer"
+          />
+          <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-2 hidden peer-checked:block">
+            {diagnoses.map((diagnosis) => (
+              <label
+                key={diagnosis.code}
+                className="flex items-center space-x-2 py-1 hover:bg-gray-50 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedDiagnoses.includes(diagnosis.code)}
+                  onChange={() => handleDiagnosisChange(diagnosis.code)}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm">
+                  {diagnosis.code} - {diagnosis.name}
+                </span>
+              </label>
+            ))}
+          </div>
+          <p className="mt-1 text-xs text-gray-500">
+            Selected: {selectedDiagnoses.length} diagnosis code(s)
+          </p>
         </div>
 
         <div>
@@ -154,16 +185,20 @@ function AddEntryForm({ setPatient }: AddEntryFormProps) {
           </label>
           <select
             id="type"
-            name="type"
-            value={formData.type}
-            onChange={handleChange}
+            {...register('type', {
+              required: 'Type is required',
+              validate: (value) => {
+                if (value === undefined || value === null || !value) {
+                  return 'Please select a valid entry type';
+                }
+                return true;
+              },
+            })}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.type ? 'border-red-500' : 'border-gray-300'
             }`}
           >
-            <option value="" defaultChecked>
-              Select Type
-            </option>
+            <option value="">Select Type</option>
             <option value="HealthCheck">Health Check</option>
             <option value="Hospital">Hospital</option>
             <option value="OccupationalHealthcare">
@@ -171,10 +206,10 @@ function AddEntryForm({ setPatient }: AddEntryFormProps) {
             </option>
           </select>
           {errors.type && (
-            <p className="mt-1 text-sm text-red-600">{errors.type}</p>
+            <p className="mt-1 text-sm text-red-600">{errors.type.message}</p>
           )}
         </div>
-        {formData.type === 'HealthCheck' && (
+        {type === 'HealthCheck' && (
           <div>
             <label
               htmlFor="healthCheckRating"
@@ -184,12 +219,10 @@ function AddEntryForm({ setPatient }: AddEntryFormProps) {
             </label>
             <select
               id="healthCheckRating"
-              name="healthCheckRating"
-              value={formData.healthCheckRating}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors ? 'border-red-500' : 'border-gray-300'
-              }`}
+              {...register('healthCheckRating', {
+                required: 'Health Check Rating is required',
+              })}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300`}
             >
               <option value="">Select Rating</option>
               <option value="0">Healthy</option>
@@ -199,7 +232,7 @@ function AddEntryForm({ setPatient }: AddEntryFormProps) {
             </select>
           </div>
         )}
-        {formData.type === 'Hospital' && (
+        {type === 'Hospital' && (
           <>
             <div>
               <label
@@ -212,8 +245,6 @@ function AddEntryForm({ setPatient }: AddEntryFormProps) {
                 type="date"
                 id="dischargeDate"
                 name="dischargeDate"
-                value={formData.discharge?.date}
-                onChange={handleChange}
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300`}
               />
             </div>
@@ -228,14 +259,12 @@ function AddEntryForm({ setPatient }: AddEntryFormProps) {
                 type="text"
                 id="dischargeCriteria"
                 name="dischargeCriteria"
-                value={formData.discharge?.criteria}
-                onChange={handleChange}
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300`}
               />
             </div>
           </>
         )}
-        {formData.type === 'OccupationalHealthcare' && (
+        {type === 'OccupationalHealthcare' && (
           <div>
             <label
               htmlFor="employerName"
@@ -246,9 +275,13 @@ function AddEntryForm({ setPatient }: AddEntryFormProps) {
             <input
               type="text"
               id="employerName"
-              name="employerName"
-              value={formData.employerName}
-              onChange={handleChange}
+              {...register('employerName', {
+                required: 'Employer Name is required',
+                minLength: {
+                  value: 2,
+                  message: 'Employer Name must be at least 2 characters long',
+                },
+              })}
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300`}
             />
           </div>
@@ -263,6 +296,10 @@ function AddEntryForm({ setPatient }: AddEntryFormProps) {
 
           <button
             type="button"
+            onClick={() => {
+              setSelectedDiagnoses([]);
+              setValue('diagnosisCodes', undefined);
+            }}
             className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
           >
             Clear

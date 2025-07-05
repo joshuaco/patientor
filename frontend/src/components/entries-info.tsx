@@ -110,7 +110,11 @@ function EntriesInfo({ entries, setPatient }: EntriesInfoProps) {
       )}
       {isOpen && (
         <Modal onClose={() => setIsOpen(false)} title="Add Entry">
-          <AddEntryForm diagnoses={diagnoses} setPatient={setPatient} />
+          <AddEntryForm
+            diagnoses={diagnoses}
+            setPatient={setPatient}
+            onClose={() => setIsOpen(false)}
+          />
         </Modal>
       )}
     </div>

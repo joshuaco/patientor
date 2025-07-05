@@ -1,9 +1,12 @@
 import { z } from 'zod';
 import type {
+  EntryTypeSchema,
   HealthCheckEntrySchema,
   HospitalEntrySchema,
   OccupationalHealthcareEntrySchema,
 } from '@/schemas/entry-schema';
+
+export type EntryType = z.infer<typeof EntryTypeSchema>;
 
 export type HospitalEntry = z.infer<typeof HospitalEntrySchema>;
 

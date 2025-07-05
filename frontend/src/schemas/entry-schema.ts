@@ -8,6 +8,12 @@ const HealthCheckRating = {
   CriticalRisk: '3',
 } as const;
 
+export const EntryTypeSchema = z.enum([
+  'HealthCheck',
+  'Hospital',
+  'OccupationalHealthcare',
+]);
+
 export const HealthCheckRatingEnum = z.nativeEnum(HealthCheckRating);
 
 export const BaseEntrySchema = z.object({
