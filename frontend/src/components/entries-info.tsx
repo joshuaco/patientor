@@ -7,9 +7,12 @@ import {
   BriefcaseBusiness,
   Heart,
   Plus,
+  X,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router';
 import { getDiagnoses } from '@/services/diagnoses';
+import { deleteEntry } from '@/services/entries';
 import type { Diagnose, Entry, Patient } from '@/types/patient';
 import type {
   HealthCheckEntry,
@@ -29,6 +32,9 @@ function EntriesInfo({ entries, setPatient }: EntriesInfoProps) {
   const [diagnoses, setDiagnoses] = useState<Diagnose[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
+  const params = useParams();
+  const patientId = params.id as string;
+
   useEffect(() => {
     const fetchDiagnoses = async () => {
       const diagnoses = await getDiagnoses();
@@ -36,6 +42,15 @@ function EntriesInfo({ entries, setPatient }: EntriesInfoProps) {
     };
     fetchDiagnoses();
   }, []);
+
+  const handleDeleteEntry = async (entryId: string) => {
+    await deleteEntry(patientId, entryId);
+    setPatient((prev) =>
+      prev
+        ? { ...prev, entries: prev.entries.filter((e) => e.id !== entryId) }
+        : null
+    );
+  };
 
   return (
     <div className="mt-8">
@@ -67,41 +82,54 @@ function EntriesInfo({ entries, setPatient }: EntriesInfoProps) {
               key={entry.id}
               className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200"
             >
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 mt-1">
-                  <Stethoscope className="h-5 w-5 text-blue-500" />
+              <div className="flex gap-3 items-start justify-between">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 mt-1">
+                    <Stethoscope className="h-5 w-5 text-blue-500" />
+                  </div>
+
+                  <div className="flex-1 space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-gray-500" />
+                      <span className="text-base font-semibold text-gray-800">
+                        {entry.date}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-gray-500 mt-0.5" />
+                      <p className="text-base text-gray-700 leading-relaxed">
+                        {entry.description}
+                      </p>
+                    </div>
+
+                    <EntryDetails entry={entry} />
+
+                    {entry.diagnosisCodes &&
+                      entry.diagnosisCodes.length > 0 && (
+                        <DiagnosisInfo
+                          diagnosisCodes={entry.diagnosisCodes}
+                          diagnoses={diagnoses}
+                        />
+                      )}
+
+                    <div className="flex items-center gap-2">
+                      <p className="text-gray-700">
+                        Diagnose by{' '}
+                        <span className="font-semibold">
+                          {entry.specialist}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
                 </div>
-
-                <div className="flex-1 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <span className="text-base font-semibold text-gray-800">
-                      {entry.date}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-gray-500 mt-0.5" />
-                    <p className="text-base text-gray-700 leading-relaxed">
-                      {entry.description}
-                    </p>
-                  </div>
-
-                  <EntryDetails entry={entry} />
-
-                  {entry.diagnosisCodes && entry.diagnosisCodes.length > 0 && (
-                    <DiagnosisInfo
-                      diagnosisCodes={entry.diagnosisCodes}
-                      diagnoses={diagnoses}
-                    />
-                  )}
-
-                  <div className="flex items-center gap-2">
-                    <p className="text-gray-700">
-                      Diagnose by{' '}
-                      <span className="font-semibold">{entry.specialist}</span>
-                    </p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    className="text-white px-4 py-0 rounded-md flex items-center gap-2 transition-colors duration-200"
+                    onClick={() => handleDeleteEntry(entry.id)}
+                  >
+                    <X className="h-8 w-8 text-red-500 hover:text-red-600 hover:scale-110" />
+                  </button>
                 </div>
               </div>
             </div>

@@ -14,3 +14,16 @@ export const createEntry = async (
     throw error;
   }
 };
+
+export const deleteEntry = async (patientId: string, entryId: string) => {
+  try {
+    const response = await api.delete(
+      `/patients/${patientId}/entries/${entryId}`
+    );
+    console.log('Entry deleted:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting entry:', error);
+    throw error;
+  }
+};
