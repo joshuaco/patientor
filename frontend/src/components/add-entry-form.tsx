@@ -15,6 +15,7 @@ function AddEntryForm({ setPatient, diagnoses, onClose }: AddEntryFormProps) {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
     setValue,
     watch,
@@ -299,6 +300,7 @@ function AddEntryForm({ setPatient, diagnoses, onClose }: AddEntryFormProps) {
             onClick={() => {
               setSelectedDiagnoses([]);
               setValue('diagnosisCodes', undefined);
+              reset();
             }}
             className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
           >

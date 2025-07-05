@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import type { Gender, NewPatient, PublicPatient } from '@/types/patient';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { createPatient } from '@/services/patients';
+import { NewPatientSchema } from '@/schemas/patient-schema';
+import type { Gender, NewPatient, PublicPatient } from '@/types/patient';
 
 interface AddPatientFormProps {
   onClose: () => void;
@@ -13,89 +15,42 @@ function AddPatientForm({
   onCancel,
   setPatients,
 }: AddPatientFormProps) {
-  const [formData, setFormData] = useState<NewPatient>({
-    name: '',
-    dateOfBirth: '',
-    ssn: '',
-    gender: '' as Gender,
-    occupation: '',
-  });
-
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof NewPatient, string>>
-  >({});
-
-  const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof NewPatient, string>> = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
-    }
-
-    if (!formData.dateOfBirth) {
-      newErrors.dateOfBirth = 'Date of birth is required';
-    }
-
-    if (!formData.gender) {
-      newErrors.gender = 'Gender is required';
-    }
-
-    if (!formData.occupation.trim()) {
-      newErrors.occupation = 'Occupation is required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // Clear error when user starts typing
-    if (errors[name as keyof NewPatient]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: undefined,
-      }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validateForm()) {
-      try {
-        const newPatient = await createPatient(formData);
-        setPatients((prevPatients: PublicPatient[]) => [
-          ...prevPatients,
-          newPatient,
-        ]);
-        onClose();
-      } catch (error) {
-        console.error('Error creating patient:', error);
-      }
-    }
-  };
-
-  const handleReset = () => {
-    setFormData({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<NewPatient>({
+    resolver: zodResolver(NewPatientSchema),
+    defaultValues: {
       name: '',
       dateOfBirth: '',
       ssn: '',
       gender: '' as Gender,
       occupation: '',
-    });
-    setErrors({});
+    },
+  });
+
+  const onSubmit = async (data: NewPatient) => {
+    try {
+      const newPatient = await createPatient(data);
+      setPatients((prevPatients: PublicPatient[]) => [
+        ...prevPatients,
+        newPatient,
+      ]);
+      onClose();
+    } catch (error) {
+      console.error('Error creating patient:', error);
+    }
+  };
+
+  const handleReset = () => {
+    reset();
   };
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label
             htmlFor="name"
@@ -106,16 +61,14 @@ function AddPatientForm({
           <input
             type="text"
             id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
+            {...register('name')}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.name ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="Enter full name"
           />
           {errors.name && (
-            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+            <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
           )}
         </div>
 
@@ -129,15 +82,15 @@ function AddPatientForm({
           <input
             type="date"
             id="dateOfBirth"
-            name="dateOfBirth"
-            value={formData.dateOfBirth}
-            onChange={handleChange}
+            {...register('dateOfBirth')}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'
             }`}
           />
           {errors.dateOfBirth && (
-            <p className="mt-1 text-sm text-red-600">{errors.dateOfBirth}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {errors.dateOfBirth.message}
+            </p>
           )}
         </div>
 
@@ -151,12 +104,15 @@ function AddPatientForm({
           <input
             type="text"
             id="ssn"
-            name="ssn"
-            value={formData.ssn}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="XXXXXX-XXXX (optional)"
+            {...register('ssn')}
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.ssn ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="XXXXXX-XXXX"
           />
+          {errors.ssn && (
+            <p className="mt-1 text-sm text-red-600">{errors.ssn.message}</p>
+          )}
         </div>
 
         <div>
@@ -168,9 +124,7 @@ function AddPatientForm({
           </label>
           <select
             id="gender"
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
+            {...register('gender')}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.gender ? 'border-red-500' : 'border-gray-300'
             }`}
@@ -181,7 +135,7 @@ function AddPatientForm({
             <option value="other">Other</option>
           </select>
           {errors.gender && (
-            <p className="mt-1 text-sm text-red-600">{errors.gender}</p>
+            <p className="mt-1 text-sm text-red-600">{errors.gender.message}</p>
           )}
         </div>
 
@@ -195,25 +149,26 @@ function AddPatientForm({
           <input
             type="text"
             id="occupation"
-            name="occupation"
-            value={formData.occupation}
-            onChange={handleChange}
+            {...register('occupation')}
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
               errors.occupation ? 'border-red-500' : 'border-gray-300'
             }`}
             placeholder="Enter occupation"
           />
           {errors.occupation && (
-            <p className="mt-1 text-sm text-red-600">{errors.occupation}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {errors.occupation.message}
+            </p>
           )}
         </div>
 
         <div className="flex gap-3 pt-4">
           <button
             type="submit"
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            disabled={isSubmitting}
+            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            Add Patient
+            {isSubmitting ? 'Adding...' : 'Add Patient'}
           </button>
 
           <button

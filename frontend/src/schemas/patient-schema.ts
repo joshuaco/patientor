@@ -9,9 +9,12 @@ export const NewPatientSchema = z.object({
   name: z
     .string()
     .min(5, { message: 'Name must be at least 5 characters long' }),
-  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
-    message: 'Date of birth must be in format YYYY-MM-DD',
-  }),
+  dateOfBirth: z
+    .string()
+    .min(10, { message: 'Date of birth is required' })
+    .regex(/^\d{4}-\d{2}-\d{2}$/, {
+      message: 'Date of birth must be in format YYYY-MM-DD',
+    }),
   gender: GenderSchema,
   occupation: z
     .string()
