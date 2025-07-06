@@ -150,7 +150,7 @@ function PatientInfo() {
                 </p>
               </div>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-3 md:flex md:justify-between">
               <div>
                 <label className="text-xs font-medium text-medical-text-secondary uppercase tracking-wider">
                   Date of Birth

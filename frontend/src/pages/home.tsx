@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import type { PublicPatient } from '@/types/patient';
 import { getAllPatients } from '@/services/patients';
+import type { PublicPatient } from '@/types/patient';
 import PatientList from '@/pages/patient-list';
 
 function Home() {
