@@ -245,7 +245,9 @@ function AddEntryForm({ setPatient, diagnoses, onClose }: AddEntryFormProps) {
               <input
                 type="date"
                 id="dischargeDate"
-                name="dischargeDate"
+                {...register('discharge.date', {
+                  required: 'Discharge Date is required',
+                })}
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300`}
               />
             </div>
@@ -259,7 +261,9 @@ function AddEntryForm({ setPatient, diagnoses, onClose }: AddEntryFormProps) {
               <input
                 type="text"
                 id="dischargeCriteria"
-                name="dischargeCriteria"
+                {...register('discharge.criteria', {
+                  required: 'Discharge Criteria is required',
+                })}
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 border-gray-300`}
               />
             </div>

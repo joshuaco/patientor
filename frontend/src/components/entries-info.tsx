@@ -247,7 +247,7 @@ function DiagnosisInfo({
         {diagnosisCodes.map((code) => (
           <div
             key={code}
-            className="bg-medical-primary/5 border border-medical-primary/20 rounded-lg p-4 hover:bg-medical-primary/10 transition-colors duration-200"
+            className="bg-medical-primary/5 border border-gray-300 rounded-lg p-4 hover:bg-medical-primary/10 transition-colors duration-200"
           >
             <div className="flex items-start gap-3">
               <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-medical-primary-light text-white">
