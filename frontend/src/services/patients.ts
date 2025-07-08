@@ -1,4 +1,4 @@
-import api from '@/lib/interceptors/axios';
+import api from '@/utils/axios';
 import type { Patient, NewPatient, PublicPatient } from '@/types/patient';
 
 export const getAllPatients = async (): Promise<PublicPatient[]> => {

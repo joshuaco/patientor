@@ -1,4 +1,4 @@
-import api from '@/lib/interceptors/axios';
+import api from '@/utils/axios';
 import type { Entry, NewEntry } from '@/types/patient';
 
 export const createEntry = async (

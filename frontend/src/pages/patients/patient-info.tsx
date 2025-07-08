@@ -14,7 +14,7 @@ import {
 import { getPatientById } from '@/services/patients';
 import type { Patient } from '@/types/patient';
 
-import EntriesInfo from '@/components/entries-info';
+import EntriesInfo from '@/pages/entries/components/entry-info';
 
 function PatientInfo() {
   const { id } = useParams();

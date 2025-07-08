@@ -21,8 +21,8 @@ import type {
   OccupationalHealthcareEntry,
 } from '@/types/entry';
 
-import Modal from './modal-form';
-import AddEntryForm from './add-entry-form';
+import Modal from '@/components/ui/modal-form';
+import AddEntryForm from '@/pages/entries/components/entry-form';
 
 interface EntriesInfoProps {
   entries: Entry[];

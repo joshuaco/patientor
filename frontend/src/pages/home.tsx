@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getAllPatients } from '@/services/patients';
 import type { PublicPatient } from '@/types/patient';
-import PatientList from '@/pages/patient-list';
+import PatientList from '@/pages/patients/patient-list';
 
 function Home() {
   const [patients, setPatients] = useState<PublicPatient[]>([]);

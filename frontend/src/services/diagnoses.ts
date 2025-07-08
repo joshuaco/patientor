@@ -1,4 +1,4 @@
-import api from '@/lib/interceptors/axios';
+import api from '@/utils/axios';
 import type { Diagnose } from '@/types/patient';
 
 export const getDiagnoses = async (): Promise<Diagnose[]> => {

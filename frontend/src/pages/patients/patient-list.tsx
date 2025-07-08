@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { User, Plus } from 'lucide-react';
-import HealthRatingBar from '@/components/health-rating-bar';
-import AddPatientForm from '@/components/add-patient-form';
-import Modal from '@/components/modal-form';
+import HealthRatingBar from '@/components/ui/health-rating-bar';
+import AddPatientForm from '@/pages/patients/components/patient-form';
+import Modal from '@/components/ui/modal-form';
 
 import type { PublicPatient } from '@/types/patient';
 

@@ -1,9 +1,9 @@
 import { Route, Routes } from 'react-router';
-import MainLayout from '@/layouts/main-layout';
-import PatientInfo from '@/pages/patient-info';
+import MainLayout from '@/components/layouts/main-layout';
+import PatientInfo from '@/pages/patients/patient-info';
 import Home from '@/pages/home';
 
-function App() {
+function Router() {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
@@ -14,4 +14,4 @@ function App() {
   );
 }
 
-export default App;
+export default Router;
