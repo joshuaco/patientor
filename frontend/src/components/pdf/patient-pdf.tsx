@@ -7,19 +7,20 @@ import {
   StyleSheet,
   PDFDownloadLink,
 } from '@react-pdf/renderer';
+import { calculateAge } from '@/utils/calculate-age';
+import { getEntryTypeLabel, getHealthRatingLabel } from '@/utils/entry-labels';
 import type { Patient, Diagnose, Entry } from '@/types/patient';
 
-// Estilos para el PDF
 const styles = StyleSheet.create({
   page: {
     flexDirection: 'column',
     backgroundColor: '#FFFFFF',
-    padding: 30,
+    padding: 25,
     fontFamily: 'Helvetica',
   },
   header: {
-    marginBottom: 30,
-    paddingBottom: 20,
+    marginBottom: 20,
+    paddingBottom: 10,
     borderBottom: '2 solid #2563eb',
   },
   title: {
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
   patientInfo: {
     backgroundColor: '#f8fafc',
     padding: 20,
-    marginBottom: 30,
+    marginBottom: 15,
     borderRadius: 8,
     border: '1 solid #e2e8f0',
   },
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   entriesSection: {
-    marginTop: 20,
+    marginTop: 10,
   },
   entryContainer: {
     backgroundColor: '#ffffff',
@@ -164,26 +165,11 @@ interface PatientPDFProps {
   diagnoses: Diagnose[];
 }
 
-// Componente del documento PDF
 const PatientPDFDocument: React.FC<PatientPDFProps> = ({
   patient,
   diagnoses,
 }) => {
-  const calculateAge = (dateOfBirth: string): number => {
-    const birth = new Date(dateOfBirth);
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDifference = today.getMonth() - birth.getMonth();
-
-    if (
-      monthDifference < 0 ||
-      (monthDifference === 0 && today.getDate() < birth.getDate())
-    ) {
-      age--;
-    }
-
-    return age;
-  };
+  const age = calculateAge(patient.dateOfBirth);
 
   const getGenderLabel = (gender: string): string => {
     switch (gender) {
@@ -193,34 +179,6 @@ const PatientPDFDocument: React.FC<PatientPDFProps> = ({
         return 'Femenino';
       default:
         return 'Otro';
-    }
-  };
-
-  const getEntryTypeLabel = (type: string): string => {
-    switch (type) {
-      case 'Hospital':
-        return 'Ingreso Hospitalario';
-      case 'OccupationalHealthcare':
-        return 'Salud Ocupacional';
-      case 'HealthCheck':
-        return 'Chequeo Médico';
-      default:
-        return 'Entrada Médica';
-    }
-  };
-
-  const getHealthRatingLabel = (rating: string): string => {
-    switch (rating) {
-      case '0':
-        return 'Saludable';
-      case '1':
-        return 'Riesgo Bajo';
-      case '2':
-        return 'Riesgo Alto';
-      case '3':
-        return 'Riesgo Crítico';
-      default:
-        return 'No especificado';
     }
   };
 
@@ -317,8 +275,7 @@ const PatientPDFDocument: React.FC<PatientPDFProps> = ({
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Fecha de nacimiento:</Text>
             <Text style={styles.infoValue}>
-              {formatDate(patient.dateOfBirth)} (
-              {calculateAge(patient.dateOfBirth)} años)
+              {formatDate(patient.dateOfBirth)} ({age} años)
             </Text>
           </View>
           <View style={styles.infoRow}>

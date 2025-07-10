@@ -12,6 +12,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { getPatientById } from '@/services/patients';
+import { calculateAge } from '@/utils/calculate-age';
 import type { Patient } from '@/types/patient';
 import EntriesInfo from '@/components/entries/entry-info';
 import PatientPDF from '@/components/pdf/patient-pdf';
@@ -48,22 +49,6 @@ function PatientInfo() {
     if (gender === 'male') return 'Male';
     if (gender === 'female') return 'Female';
     return 'Other';
-  };
-
-  const calculateAge = (dateOfBirth: string) => {
-    const birth = new Date(dateOfBirth);
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDifference = today.getMonth() - birth.getMonth();
-
-    if (
-      monthDifference < 0 ||
-      (monthDifference === 0 && today.getDate() < birth.getDate())
-    ) {
-      age--;
-    }
-
-    return age;
   };
 
   if (isLoading) {
