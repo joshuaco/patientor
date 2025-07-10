@@ -22,7 +22,7 @@ import type {
 } from '@/types/entry';
 
 import Modal from '@/components/ui/modal-form';
-import AddEntryForm from '@/pages/entries/components/entry-form';
+import AddEntryForm from '@/components/entries/entry-form';
 
 interface EntriesInfoProps {
   entries: Entry[];

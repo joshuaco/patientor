@@ -13,8 +13,8 @@ import {
 } from 'lucide-react';
 import { getPatientById } from '@/services/patients';
 import type { Patient } from '@/types/patient';
-
 import EntriesInfo from '@/components/entries/entry-info';
+import PatientPDF from '@/components/pdf/patient-pdf';
 
 function PatientInfo() {
   const { id } = useParams();
@@ -102,35 +102,40 @@ function PatientInfo() {
   return (
     <div className="bg-medical-background min-h-screen">
       {/* Patient Header */}
-      <div className="bg-white shadow-sm border-b border-medical-border">
+      <header className="bg-white shadow-sm border-b border-medical-border">
         <div className="max-w-7xl mx-auto p-8">
-          <div className="flex items-start gap-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-medical-primary/10 to-medical-primary/20 rounded-2xl flex items-center justify-center shadow-sm">
-              <User className="text-medical-primary w-10 h-10" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-4 mb-3">
-                <h1 className="text-4xl font-bold text-medical-text-primary">
-                  {patient.name}
-                </h1>
-                <div className="flex items-center gap-2 px-3 py-1 bg-medical-primary/10 rounded-full">
-                  {getGenderIcon(patient.gender)}
-                  <span className="text-medical-text-primary font-medium text-sm">
-                    {getGenderLabel(patient.gender)}
-                  </span>
-                </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-start gap-6">
+              <div className="w-20 h-20 bg-gradient-to-br from-medical-primary/10 to-medical-primary/20 rounded-2xl flex items-center justify-center shadow-sm">
+                <User className="text-medical-primary w-10 h-10" />
               </div>
-              <div className="w-20 h-1 bg-gradient-to-r from-medical-primary to-medical-primary-light rounded-full"></div>
-              <p className="text-medical-text-secondary mt-3 text-lg">
-                Patient ID:{' '}
-                <span className="font-medium text-medical-text-primary">
-                  {id}
-                </span>
-              </p>
+              <div className="flex-1">
+                <div className="flex items-center gap-4 mb-3">
+                  <h1 className="text-4xl font-bold text-medical-text-primary">
+                    {patient.name}
+                  </h1>
+                  <div className="flex items-center gap-2 px-3 py-1 bg-medical-primary/10 rounded-full">
+                    {getGenderIcon(patient.gender)}
+                    <span className="text-medical-text-primary font-medium text-sm">
+                      {getGenderLabel(patient.gender)}
+                    </span>
+                  </div>
+                </div>
+                <div className="w-20 h-1 bg-gradient-to-r from-medical-primary to-medical-primary-light rounded-full"></div>
+                <p className="text-medical-text-secondary mt-3 text-lg">
+                  Patient ID:{' '}
+                  <span className="font-medium text-medical-text-primary">
+                    {id}
+                  </span>
+                </p>
+              </div>
+            </div>
+            <div>
+              <PatientPDF patient={patient} diagnoses={[]} />
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Patient Information Cards */}
       <div className="max-w-7xl mx-auto p-8">
