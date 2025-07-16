@@ -16,6 +16,7 @@ import { calculateAge } from '@/utils/calculate-age';
 import type { Patient } from '@/types/patient';
 import EntriesInfo from '@/components/entries/entry-info';
 import PatientPDF from '@/components/pdf/patient-pdf';
+import PDFErrorBoundary from '@/components/pdf/pdf-error-boundary';
 
 function PatientInfo() {
   const { id } = useParams();
@@ -116,7 +117,9 @@ function PatientInfo() {
               </div>
             </div>
             <div>
-              <PatientPDF patient={patient} diagnoses={[]} />
+              <PDFErrorBoundary>
+                <PatientPDF patient={patient} diagnoses={[]} />
+              </PDFErrorBoundary>
             </div>
           </div>
         </div>

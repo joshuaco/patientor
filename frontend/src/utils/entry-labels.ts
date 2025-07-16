@@ -25,3 +25,14 @@ export const getHealthRatingLabel = (rating: string): string => {
       return 'No especificado';
   }
 };
+
+export const getGenderLabel = (gender: string): string => {
+  switch (gender) {
+    case 'male':
+      return 'Masculino';
+    case 'female':
+      return 'Femenino';
+    default:
+      return 'Otro';
+  }
+};
